@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fundação Interface Hub</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="search.js" defer></script>
+</head>
+<body>
+
+<header class="gov-header">
+  <div class="container header-grid">
+    <div class="brand">
+      <img src="logo.png" alt="Interface Hub" class="logo">
+      <div>
+        <div class="org-name">Fundação Interface Hub</div>
+        <div class="org-sub">Inovação digital · Acessibilidade · Impacto social</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button id="toggleTheme" class="icon-btn" aria-label="Alternar tema">Modo</button>
+      <div class="search-inline">
+        <input id="campoBusca" aria-label="Pesquisar no site" placeholder="Pesquisar no site">
+        <button onclick="pesquisar()" aria-label="Pesquisar">Pesquisar</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="main-nav">
+  <div class="container nav-grid">
+    <a href="index.html">Início</a>
+    <a href="portfolio.html">Portfólio</a>
+    <a href="projects.html">Projetos</a>
+    <a href="transparencia.html">Transparência</a>
+    <a href="orcamentos.html">Orçamentos</a>
+    <a href="about.html">Sobre</a>
+    <a href="contact.html">Contato</a>
+    <a href="chatbot.html" class="cta">Atendimento</a>
+  </div>
+</nav>
+
+<main>
+  <section class="hero container">
+    <h1>Bem-vindo ao Portal da Fundação Interface Hub</h1>
+    <p>Promovemos projetos de inovação, inclusão digital e consultoria para instituições com foco em acessibilidade</p>
+  </section>
+
+  <section class="panels container">
+    <article class="panel">
+      <h3>Transparência</h3>
+      <p>Acesse estatutos, relatórios e prestação de contas</p>
+      <a href="transparencia.html" class="link">Ver documentos</a>
+    </article>
+
+    <article class="panel">
+      <h3>Orçamentos</h3>
+      <p>Solicite propostas para projetos digitais e consultoria técnica</p>
+      <a href="orcamentos.html" class="link">Pedir orçamento</a>
+    </article>
+
+    <article class="panel">
+      <h3>Projetos</h3>
+      <p>Veja projetos em destaque e cases de impacto</p>
+      <a href="projects.html" class="link">Ver projetos</a>
+    </article>
+  </section>
+</main>
+
+<footer class="gov-footer">
+  <div class="container footer-grid">
+    <div>© Fundação Interface Hub — Todos os direitos reservados</div>
+    <div class="footer-links">
+      <a href="transparencia.html">Transparência</a>
+      <a href="contact.html">Contato</a>
+    </div>
+  </div>
+</footer>
+
+<!-- VLibras -->
+<div vw class="enabled"></div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>new window.VLibras.Widget('https://vlibras.gov.br/app')</script>
+
+<script>
+  // theme toggle (persist)
+  const btn = document.getElementById('toggleTheme');
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme') || 'light';
+  if(saved === 'dark') root.setAttribute('data-theme','dark');
+  btn.addEventListener('click', ()=> {
+    const cur = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', cur === 'dark' ? 'dark' : '');
+    localStorage.setItem('theme', cur);
+  });
+</script>
+
+</body>
+</html>

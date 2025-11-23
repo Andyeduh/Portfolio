@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Chatbot — Interface Hub</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<header class="gov-header">
+  <div class="brand">
+    <img src="logo.png" class="logo">
+    <div class="brand-text"><strong>Assistente Institucional</strong></div>
+  </div>
+</header>
+
+<main>
+  <h1>Assistente Virtual</h1>
+
+  <div id="chat-area">
+    <div id="chatbot-messages" style="border:1px solid #ccc;padding:10px;height:300px;overflow:auto"></div>
+
+    <input id="chat-input" placeholder="Digite sua pergunta..." aria-label="Digite aqui">
+    <button id="chat-send">Enviar</button>
+  </div>
+</main>
+
+<script>
+document.getElementById('chat-send').addEventListener('click', async ()=>{
+  const text = document.getElementById('chat-input').value.trim();
+  if(!text) return;
+
+  const box = document.getElementById('chatbot-messages');
+  const u = document.createElement('div');
+  u.textContent = 'Você: ' + text;
+  u.style.textAlign = 'right';
+  box.appendChild(u);
+
+  document.getElementById('chat-input').value='';
+
+  try{
+    const res = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:text})
+    });
+
+    const data = await res.json();
+
+    const b = document.createElement('div');
+    b.textContent = 'Assistente: ' + data.reply;
+    b.style.background = '#eef6ff';
+    b.style.marginTop = '6px';
+    b.style.padding = '6px';
+    box.appendChild(b);
+
+    box.scrollTop = box.scrollHeight;
+  }
+  catch(e){
+    const err = document.createElement('div');
+    err.textContent = 'Erro ao conectar ao servidor';
+    err.style.color = 'red';
+    box.appendChild(err);
+  }
+});
+</script>
+
+</body>
+</html>

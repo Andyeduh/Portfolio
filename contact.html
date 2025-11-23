@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><title>Assistente — Interface Hub</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header class="gov-header"><div class="container brand"><img src="public/logo.png" class="logo"><div class="brand-text"><strong>Assistente Institucional</strong></div></div></header>
+<main class="container">
+  <h1>Assistente Virtual</h1>
+  <div id="chat-area" style="display:flex;flex-direction:column;gap:8px;">
+    <div id="chat-messages" style="height:320px;overflow:auto;border:1px solid #e0e6ef;padding:12px;background:#fff;border-radius:8px"></div>
+    <div style="display:flex;gap:8px">
+      <input id="chat-input" placeholder="Digite sua pergunta..." style="flex:1;padding:10px">
+      <button id="chat-send">Enviar</button>
+    </div>
+  </div>
+</main>
+
+<script>
+document.getElementById('chat-send').addEventListener('click', async ()=>{
+  const t = document.getElementById('chat-input');
+  const text = t.value.trim(); if(!text) return;
+  const box = document.getElementById('chat-messages');
+  const u = document.createElement('div'); u.style.textAlign='right'; u.textContent='Você: '+text; box.appendChild(u);
+  t.value='';
+  try{
+    const res = await fetch('/api/chat', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:text})});
+    const data = await res.json();
+    const b = document.createElement('div'); b.style.background='#eef6ff'; b.style.padding='8px'; b.style.marginTop='6px'; b.textContent='Assistente: '+(data.reply||data.reply||'Sem resposta'); box.appendChild(b);
+    box.scrollTop = box.scrollHeight;
+  }catch(err){
+    const e = document.createElement('div'); e.style.color='red'; e.textContent='Erro de conexão'; box.appendChild(e);
+  }
+});
+</script>
+</body>
+</html>

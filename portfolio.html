@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Interface Hub — Fundação</title>
+<meta name="description" content="Interface Hub — inovação, acessibilidade e tecnologia para impacto social" />
+<style>
+/* ---------- Reset ---------- */
+* { box-sizing:border-box; margin:0; padding:0 }
+html,body{height:100%}
+body {
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  color:var(--text,#0b1b2f);
+  background:linear-gradient(120deg,#07102a 0%, #0b2a57 40%, #06203a 100%);
+  background-size:300% 300%;
+  animation: bgShift 14s ease infinite;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* ---------- Theme variables ---------- */
+:root{
+  --accent:#1e66ff;
+  --card-bg: rgba(255,255,255,0.06);
+  --glass: rgba(255,255,255,0.06);
+  --text:#eaf2ff;
+  --muted:rgba(234,242,255,0.8);
+  --success:#28b485;
+  --danger:#ff6b6b;
+}
+[data-theme="light"]{
+  --accent:#0b4aa0;
+  --card-bg: rgba(255,255,255,0.92);
+  --glass: rgba(255,255,255,0.85);
+  --text:#0b1630;
+  --muted:#475569;
+}
+
+/* animate background */
+@keyframes bgShift {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* ---------- Partículas (canvas-like) ---------- */
+.particles {
+  position: fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+.particle {
+  position:absolute;
+  width:6px; height:6px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.14);
+  box-shadow:0 0 8px rgba(30,110,255,0.08), 0 0 2px rgba(255,255,255,0.04);
+  transform:translate3d(0,0,0);
+  will-change: transform, opacity;
+}
+
+/* ---------- 3D computer ---------- */
+.pc-wrap {
+  position: fixed;
+  inset: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:0;
+  pointer-events:none;
+  opacity:0.12;
+}
+.pc-scene {
+  width: 360px;
+  height: 220px;
+  perspective: 1200px;
+}
+.pc {
+  width:320px;
+  height:200px;
+  position:relative;
+  transform-style:preserve-3d;
+  animation: pcSpin 20s linear infinite;
+  margin-left:40px;
+}
+@keyframes pcSpin { from{transform:rotateY(0deg)} to{transform:rotateY(360deg)} }
+.pc .face {
+  position:absolute;
+  width:320px;height:200px;
+  border-radius:12px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.35), 0 2px 6px rgba(255,255,255,0.02) inset;
+}
+.pc .front{ transform: translateZ(60px) rotateX(0deg); }
+.pc .back { transform: translateZ(-60px) rotateY(180deg); width:320px;height:200px; }
+.pc .left { width:120px; height:200px; transform: rotateY(-90deg) translateZ(-100px); left:-120px; top:0; }
+.pc .right { width:120px; height:200px; transform: rotateY(90deg) translateZ(-100px); right:-120px; top:0; }
+.pc .top { height:120px; width:320px; transform: rotateX(90deg) translateZ(-100px); top:-120px; left:0; }
+.pc .bottom { height:120px; width:320px; transform: rotateX(-90deg) translateZ(-100px); bottom:-120px; left:0; }
+
+/* screen content */
+.screen {
+  position:absolute; inset:18px; border-radius:8px; overflow:hidden;
+  background:linear-gradient(135deg, rgba(20,60,140,0.65), rgba(10,30,90,0.45));
+  display:flex;align-items:center;justify-content:center;color:white;
+  font-weight:600;
+  background-blend-mode:overlay;
+}
+
+/* ---------- Layout ---------- */
+.site {
+  position:relative;
+  z-index:5;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* skip link */
+.skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+.skip-link:focus{left:12px;top:12px;background:#fff;color:#000;padding:8px 12px;border-radius:6px;z-index:9999}
+
+/* header */
+.header {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px; gap:12px;
+}
+.brand {display:flex;align-items:center;gap:12px}
+.brand img{height:56px;border-radius:10px;background:#fff;padding:6px}
+
+/* nav */
+.nav {display:flex;gap:12px;align-items:center}
+.nav a {color:var(--text);text-decoration:none;font-weight:700;padding:8px 10px;border-radius:8px}
+.nav a:focus, .nav a:hover {outline:none;background:rgba(255,255,255,0.04)}
+.actions {display:flex;gap:8px;align-items:center}
+
+/* hero */
+.hero {
+  padding:64px 20px 32px;
+  display:flex;flex-direction:column;align-items:flex-start;gap:10px;
+  max-width:1100px;margin:0 auto;
+}
+.title {font-size:clamp(24px,4.5vw,44px);line-height:1.02;color:var(--text)}
+.lead {color:var(--muted);max-width:72ch;font-size:1rem}
+
+/* main grid */
+.main {
+  max-width:1100px;margin:28px auto;padding:0 16px 64px;
+  display:grid;grid-template-columns: 1fr 360px; gap:20px;
+}
+@media (max-width:1000px) { .main{grid-template-columns:1fr} }
+
+/* left column cards */
+.col-card { background:var(--card-bg); padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04) }
+.card-title{font-weight:700;margin-bottom:8px}
+.card-text{color:var(--muted)}
+
+/* sidebar */
+.sidebar { position:sticky; top:20px; align-self:start }
+.widget { background:var(--card-bg); padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.04); margin-bottom:14px }
+.btn {display:inline-block;background:var(--accent);color:white;padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--text)}
+
+/* footer */
+.footer { padding:24px;text-align:center;color:var(--muted) }
+
+/* ---------- Accessibility controls ---------- */
+.access-controls { display:flex; gap:8px; align-items:center }
+.icon-btn { background:transparent;border:1px solid rgba(255,255,255,0.06); color:var(--text); padding:8px;border-radius:8px; cursor:pointer }
+
+/* ---------- Cookie modal & bar ---------- */
+.cookie-bar {
+  position:fixed;left:12px;right:12px;bottom:12px;background:linear-gradient(90deg, rgba(0,0,0,0.45), rgba(0,0,0,0.25));
+  color:var(--text);backdrop-filter: blur(6px);
+  padding:12px;border-radius:10px;display:flex;gap:12px;align-items:center;z-index:9999;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+.cookie-bar .msg{flex:1;color:var(--muted)}
+.cookie-bar .actions { display:flex; gap:8px }
+
+/* cookie modal (C style) */
+.cookie-modal-backdrop {
+  position:fixed; inset:0; background:rgba(2,6,23,0.6); display:none; align-items:center;justify-content:center; z-index:10000;
+}
+.cookie-modal {
+  width:min(720px,94%); background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+  border:1px solid rgba(255,255,255,0.06); padding:20px; border-radius:12px;
+}
+.cookie-section { display:flex; gap:12px; align-items:flex-start; margin-top:12px; flex-wrap:wrap }
+.cookie-row { background:rgba(255,255,255,0.02); padding:12px; border-radius:8px; flex:1; min-width:200px }
+.toggle { display:flex; gap:8px; align-items:center; justify-content:space-between }
+.switch {
+  width:44px; height:24px; background:rgba(255,255,255,0.12); border-radius:999px; position:relative; cursor:pointer;
+}
+.knob { width:18px; height:18px; background:white; border-radius:50%; position:absolute; left:4px; top:3px; transition:0.18s }
+
+/* small note for accepted */
+.cookie-mini {
+  position:fixed; left:12px; bottom:12px; padding:8px 12px; background:rgba(0,0,0,0.45); color:var(--muted); border-radius:8px; z-index:9998; display:none;
+}
+
+/* focus outlines for accessibility */
+button:focus, a:focus, input:focus { outline:3px solid rgba(30,110,255,0.22); outline-offset:2px }
+
+/* small responsive tweaks */
+@media (max-width:560px){
+  .nav{display:none}
+  .hero{padding:40px 12px}
+  .pc{transform:scale(0.78)}
+  .cookie-bar{flex-direction:column;align-items:flex-start}
+}
+<!-- VLibras -->
+<div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+<script>
+    new window.VLibras.Widget('https://vlibras.gov.br/app');
+</script>
+</style>
+</head>
+<body>
+
+<a href="#maincontent" class="skip-link">Pular para o conteúdo</a>
+
+<!-- Partículas container -->
+<div class="particles" aria-hidden="true"></div>
+
+<!-- 3D Computer in background -->
+<div class="pc-wrap" aria-hidden="true">
+  <div class="pc-scene">
+    <div class="pc" aria-hidden="true">
+      <div class="face front"><div class="screen">Interface Hub</div></div>
+      <div class="face back"></div>
+      <div class="face left"></div>
+      <div class="face right"></div>
+      <div class="face top"></div>
+      <div class="face bottom"></div>
+    </div>
+  </div>
+</div>
+
+<div class="site" id="site-root" role="application" aria-label="Portal Interface Hub">
+  <!-- header -->
+  <header class="header" role="banner">
+    <div class="brand">
+      <img src="https://files.catbox.moe/op8ddi.jpeg" alt="Logomarca Interface Hub" />
+      <div>
+        <div style="font-weight:800;font-size:1.05rem;color:var(--text)">Fundação Interface Hub</div>
+        <div style="font-size:0.85rem;color:var(--muted)">Inovação • Acessibilidade • Impacto social</div>
+      </div>
+    </div>
+
+    <nav class="nav" role="navigation" aria-label="Menu principal">
+      <a href="#sobre">Sobre</a>
+      <a href="#servicos">Serviços</a>
+      <a href="#portfolio">Portfólio</a>
+      <a href="#contato">Contato</a>
+    </nav>
+
+    <div class="actions">
+      <div class="access-controls" role="group" aria-label="Controles de acessibilidade">
+        <button class="icon-btn" id="increase-font" title="Aumentar fonte">A+</button>
+        <button class="icon-btn" id="decrease-font" title="Diminuir fonte">A-</button>
+        <button class="icon-btn" id="toggle-contrast" title="Alto contraste">Contraste</button>
+      </div>
+      <button id="open-cookie-settings" class="icon-btn" title="Configurações de cookies">Cookies</button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main id="maincontent" class="hero" role="main">
+    <div class="title">Tecnologia que conecta, inclui e transforma</div>
+    <div class="lead">A Interface Hub desenvolve soluções digitais acessíveis para governos, ONGs e instituições que querem alcançar impacto real</div>
+  </main>
+
+  <!-- Main grid -->
+  <div class="main">
+    <div>
+      <section class="col-card" aria-labelledby="aboutTitle">
+        <h2 id="aboutTitle" class="card-title">Sobre a Fundação</h2>
+        <p class="card-text">Criada para promover inclusão digital e inovação responsável, a Interface Hub combina design, software e políticas públicas para resultados mensuráveis</p>
+      </section>
+
+      <section class="col-card" aria-labelledby="servTitle" style="margin-top:18px">
+        <h3 id="servTitle" class="card-title">Serviços</h3>
+        <ul class="card-text" style="margin-top:8px;list-style:disc;padding-left:18px">
+          <li>Portais institucionais e portais de transparência</li>
+          <li>Chatbots acessíveis e assistentes inteligentes</li>
+          <li>Consultoria em inclusão digital e UX para órgãos públicos</li>
+        </ul>
+      </section>
+
+      <section class="col-card" aria-labelledby="portTitle" style="margin-top:18px">
+        <h3 id="portTitle" class="card-title">Projetos em destaque</h3>
+        <div class="card-text" style="display:grid;gap:10px;margin-top:10px">
+          <div style="padding:10px;background:rgba(255,255,255,0.02);border-radius:8px">Portal Institucional — Morais Piscinas (site + mascote)</div>
+          <div style="padding:10px;background:rgba(255,255,255,0.02);border-radius:8px">Site da Secretaria de Juventude e Impacto Social
+<a href="https://sjis.duckdns.org/" class="botao-link">acessar site agora</a>
+
+<style>
+.botao-link {
+    display: inline-block;
+    background: #0048ff;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.botao-link:hover {
+    background: #0028b8;
+}
+</style>
+</a>
+</div>
+          <div style="padding:10px;background:rgba(255,255,255,0.02);border-radius:8px">URA Inteligente — atendimento via web</div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="sidebar" role="complementary" aria-label="Barra lateral">
+      <div class="widget" aria-hidden="false">
+        <div style="font-weight:700;margin-bottom:8px">Solicitar Orçamento</div>
+        <p style="color:var(--muted);margin-bottom:12px">Preencha um formulário e retornamos com prazo e proposta</p>
+        <button class="btn" id="open-orc">Pedir Orçamento</button>
+      </div>
+
+      <div class="widget" role="region" aria-label="Acessibilidade">
+        <div style="font-weight:700;margin-bottom:8px">Acessibilidade</div>
+        <div style="color:var(--muted);font-size:0.95rem">Use os controles para ajustar a leitura</div>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="footer" role="contentinfo">
+    <div class="footer">© Fundação Interface Hub — Todos os direitos reservados</div>
+  </footer>
+</div>
+
+<!-- Cookie mini bar (A style) -->
+<div class="cookie-mini" id="cookieMini" role="status" aria-live="polite">Cookies aceitos — preferências salvas</div>
+
+<!-- Cookie bar (persistent quick banner, shown only if no consent) -->
+<div class="cookie-bar" id="cookieBar" role="dialog" aria-live="polite" aria-label="Aviso de cookies" style="display:none">
+  <div class="msg">Este site utiliza cookies para melhorar sua experiência, medir desempenho e personalizar conteúdo</div>
+  <div class="actions">
+    <button class="btn ghost" id="manageCookies">Gerenciar</button>
+    <button class="btn" id="acceptAllBtn">Aceitar tudo</button>
+  </div>
+</div>
+
+<!-- Cookie modal (C style) -->
+<div class="cookie-modal-backdrop" id="cookieModal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="cookie-modal" role="document" aria-labelledby="cookieTitle">
+    <h2 id="cookieTitle">Preferências de cookies</h2>
+    <p style="color:var(--muted)">Escolha quais categorias de cookies você permite. Você pode alterar isso a qualquer momento</p>
+
+    <div class="cookie-section">
+      <div class="cookie-row" aria-hidden="false">
+        <div style="font-weight:800">Essenciais</div>
+        <div style="color:var(--muted);margin-top:6px">Cookies necessários para funcionamento básico do site (sempre ativos)</div>
+        <div style="margin-top:8px;color:var(--muted)">Ativado</div>
+      </div>
+
+      <div class="cookie-row">
+        <div style="font-weight:800">Desempenho</div>
+        <div style="color:var(--muted);margin-top:6px">Cookies usados para métricas e análise do site</div>
+        <div class="toggle" style="margin-top:8px">
+          <div style="color:var(--muted)">Ativar</div>
+          <div class="switch" data-key="performance" tabindex="0" role="switch" aria-checked="false" aria-label="Ativar cookies de desempenho"><div class="knob"></div></div>
+        </div>
+      </div>
+
+      <div class="cookie-row">
+        <div style="font-weight:800">Marketing</div>
+        <div style="color:var(--muted);margin-top:6px">Cookies para personalização e campanhas (opcional)</div>
+        <div class="toggle" style="margin-top:8px">
+          <div style="color:var(--muted)">Ativar</div>
+          <div class="switch" data-key="marketing" tabindex="0" role="switch" aria-checked="false" aria-label="Ativar cookies de marketing"><div class="knob"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:18px">
+      <button class="btn ghost" id="cookieCancel">Cancelar</button>
+      <button class="btn" id="savePrefs">Salvar preferências</button>
+    </div>
+  </div>
+</div>
+
+<!-- VLibras -->
+<div vw class="enabled" aria-hidden="true">
+  <div vw-access-button></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+
+<script>
+/* ---------- Partículas dynamic ---------- */
+(function makeParticles(){
+  const container = document.querySelector('.particles');
+  if(!container) return;
+  const count = Math.min(28, Math.floor(window.innerWidth/30));
+  for(let i=0;i<count;i++){
+    const s = document.createElement('span');
+    s.className='particle';
+    container.appendChild(s);
+    resetParticle(s, true);
+  }
+  function resetParticle(el, initial=false){
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const left = Math.random()*vw;
+    const size = 3 + Math.random()*6;
+    el.style.width = size+'px'; el.style.height = size+'px';
+    el.style.left = left+'px';
+    el.style.top = (vh + Math.random()*300)+'px';
+    el.style.opacity = (0.12 + Math.random()*0.6).toFixed(2);
+    const dur = 8 + Math.random()*18;
+    el.style.transition = `transform ${dur}s linear, opacity ${dur/2}s linear`;
+    requestAnimationFrame(()=> {
+      el.style.transform = `translateY(-${vh+400}px)`;
+      setTimeout(()=> resetParticle(el), dur*1000 + Math.random()*2000);
+    });
+  }
+})();
+
+/* ---------- 3D screen text adjust ---------- */
+document.querySelectorAll('.screen').forEach(s=>{
+  s.style.display='flex';s.style.alignItems='center';s.style.justifyContent='center';
+  s.style.fontSize='20px';s.style.fontWeight='700';
+});
+
+/* ---------- Accessibility controls ---------- */
+const root = document.documentElement;
+document.getElementById('increase-font').addEventListener('click', ()=> {
+  const cur = parseFloat(getComputedStyle(document.documentElement).fontSize)||16;
+  document.documentElement.style.fontSize = (cur + 1) + 'px';
+});
+document.getElementById('decrease-font').addEventListener('click', ()=> {
+  const cur = parseFloat(getComputedStyle(document.documentElement).fontSize)||16;
+  if(cur>12) document.documentElement.style.fontSize = (cur - 1) + 'px';
+});
+document.getElementById('toggle-contrast').addEventListener('click', ()=> {
+  document.body.classList.toggle('high-contrast');
+  const is = document.body.classList.contains('high-contrast');
+  if(is){ root.setAttribute('data-theme','light') } else { root.removeAttribute('data-theme') }
+});
+
+/* ---------- Cookie consent logic ---------- */
+const cookieKey = 'ih_cookie_prefs_v1';
+const cookieBar = document.getElementById('cookieBar');
+const cookieModal = document.getElementById('cookieModal');
+const cookieMini = document.getElementById('cookieMini');
+
+function loadPrefs(){
+  try{
+    const raw = localStorage.getItem(cookieKey);
+    return raw ? JSON.parse(raw) : null;
+  }catch(e){ return null }
+}
+
+function savePrefs(prefs){
+  localStorage.setItem(cookieKey, JSON.stringify(prefs));
+  applyPrefs(prefs);
+}
+
+function applyPrefs(prefs){
+  // show mini if accepted any
+  if(!prefs) return;
+  if(prefs.accepted){
+    cookieBar.style.display='none';
+    cookieMini.style.display='block';
+    setTimeout(()=> cookieMini.style.display='none', 5000);
+  } else {
+    cookieMini.style.display='none';
+  }
+  // pretend to enable analytics if performance true
+  if(prefs.performance){
+    // load analytics script placeholder (no real analytics included)
+    if(!window.__ih_analytics_loaded){
+      window.__ih_analytics_loaded = true;
+      console.log('Analytics enabled (simulado)')
+    }
+  }
+}
+
+function showCookieBarIfNeeded(){
+  const prefs = loadPrefs();
+  if(!prefs){
+    cookieBar.style.display='flex';
+  } else {
+    applyPrefs(prefs);
+  }
+}
+
+/* open manage modal */
+document.getElementById('manageCookies').addEventListener('click', ()=> {
+  openCookieModal();
+});
+document.getElementById('open-cookie-settings').addEventListener('click', ()=> openCookieModal());
+
+function openCookieModal(){
+  cookieModal.style.display='flex';
+  cookieModal.setAttribute('aria-hidden','false');
+  // set switches to current prefs
+  const prefs = loadPrefs() || { performance:false, marketing:false, accepted:false};
+  document.querySelectorAll('.switch').forEach(s=>{
+    const key = s.getAttribute('data-key');
+    const enabled = !!prefs[key];
+    setSwitchState(s, enabled);
+  });
+}
+
+/* modal interactions */
+document.getElementById('cookieCancel').addEventListener('click', ()=> {
+  cookieModal.style.display='none';
+  cookieModal.setAttribute('aria-hidden','true');
+});
+document.getElementById('savePrefs').addEventListener('click', ()=> {
+  const prefs = { accepted:true, performance:false, marketing:false };
+  document.querySelectorAll('.switch').forEach(s=>{
+    const key = s.getAttribute('data-key');
+    prefs[key] = s.getAttribute('data-enabled') === 'true';
+  });
+  savePrefs(prefs);
+  cookieModal.style.display='none';
+  cookieModal.setAttribute('aria-hidden','true');
+  cookieBar.style.display='none';
+  cookieMini.style.display='block';
+  setTimeout(()=> cookieMini.style.display='none', 4000);
+});
+
+/* accept all quick */
+document.getElementById('acceptAllBtn').addEventListener('click', ()=> {
+  const prefs = { accepted:true, performance:true, marketing:true };
+  savePrefs(prefs);
+  cookieBar.style.display='none';
+  cookieMini.style.display='block';
+  setTimeout(()=> cookieMini.style.display='none', 4000);
+});
+
+/* switch toggle behavior */
+function setSwitchState(switchEl, enabled){
+  const knob = switchEl.querySelector('.knob');
+  if(enabled){
+    switchEl.style.background = 'linear-gradient(90deg,var(--accent),#6fb0ff)';
+    knob.style.left = '22px';
+    switchEl.setAttribute('data-enabled','true');
+    switchEl.setAttribute('aria-checked','true');
+  } else {
+    switchEl.style.background = 'rgba(255,255,255,0.12)';
+    knob.style.left = '4px';
+    switchEl.setAttribute('data-enabled','false');
+    switchEl.setAttribute('aria-checked','false');
+  }
+}
+document.querySelectorAll('.switch').forEach(s=>{
+  s.tabIndex = 0;
+  s.addEventListener('click', ()=> {
+    const cur = s.getAttribute('data-enabled') === 'true';
+    setSwitchState(s, !cur);
+  });
+  s.addEventListener('keydown', (e)=> {
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); s.click(); }
+  });
+});
+
+/* initialize on load */
+showCookieBarIfNeeded();
+
+/* open-orc example (just scroll to contact) */
+document.getElementById('open-orc').addEventListener('click', ()=> {
+  document.getElementById('contato').scrollIntoView({behavior:'smooth'});
+});
+
+/* VLibras init (async) */
+(function initVlibras(){
+  const s = document.createElement('script');
+  s.src = "https://vlibras.gov.br/app/vlibras-plugin.js";
+  s.async = true;
+  s.onload = ()=> {
+    try{ new window.VLibras.Widget('https://vlibras.gov.br/app'); }catch(e){}
+  };
+  document.body.appendChild(s);
+})();
+
+/* keyboard accessibility: close modal with ESC */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    if(cookieModal.style.display === 'flex'){ cookieModal.style.display='none'; cookieModal.setAttribute('aria-hidden','true'); }
+  }
+});
+</script>
+</body>
+<body>
+
+    <!-- seu site inteiro aqui -->
+
+    <!-- VLibras -->
+    <div vw class="enabled">
+      <div vw-access-button class="active"></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+      </div>
+    </div>
+
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+        new window.VLibras.Widget('https://vlibras.gov.br/app');
+    </script>
+
+</body>
+</html>
+</html>

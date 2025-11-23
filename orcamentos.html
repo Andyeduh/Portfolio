@@ -1,0 +1,10 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Orçamentos</title><link rel="stylesheet" href="style.css"></head><body>
+<header class="gov-header"><div class="container brand"><img src="logo.png" class="logo"><div class="brand-text"><strong>Orçamentos</strong></div></div></header>
+<main class="container"><h1>Solicitar orçamento</h1>
+<form id="orc-form" method="post" action="/api/chat">
+  <label>Nome completo<input name="nome" required></label>
+  <label>Email<input type="email" name="email" required></label>
+  <label>Serviço<select name="servico"><option>Site institucional</option><option>Plataforma web</option><option>Sistema administrativo</option></select></label>
+  <label>Descrição<textarea name="mensagem" rows="5" required></textarea></label>
+  <div class="form-actions"><button type="submit">Enviar</button></div>
+</form></main></body></html>
